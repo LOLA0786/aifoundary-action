@@ -3,9 +3,9 @@ import sys
 import re
 
 SCAN_PATTERNS = {
-    "HARDCODED_PROMPT": re.compile(r'prompt\s*=\s*["\'].*["\']', re.IGNORECASE),
-    "OPENAI_NO_GUARD": re.compile(r'openai\.ChatCompletion\.create', re.IGNORECASE),
-    "LLM_DIRECT_EXEC": re.compile(r'(exec|eval)\s*\(', re.IGNORECASE),
+    "HARDCODED_PROMPT": re.compile(r'prompt\\s*=\\s*["\\\'].*["\\\']', re.IGNORECASE),
+    "OPENAI_NO_GUARD": re.compile(r'openai\\.ChatCompletion\\.create', re.IGNORECASE),
+    "LLM_DIRECT_EXEC": re.compile(r'(exec|eval)\\s*\\(', re.IGNORECASE),
 }
 
 def scan_file(path):
@@ -22,8 +22,10 @@ def scan_file(path):
 
 def main():
     scan_path = os.getenv("INPUT_SCAN-PATH", ".")
+    mode = os.getenv("INPUT_MODE", "warn").lower()
 
-    print(f"🔍 AIFoundary scanning: {scan_path}")
+    print(f"🔍 AIFoundary scanning path: {scan_path}")
+    print(f"🛡️ Mode: {mode.upper()}")
 
     risks = []
 
@@ -40,8 +42,12 @@ def main():
         for path, findings in risks:
             print(f"- {path}: {', '.join(findings)}")
 
-        print("\n❌ Build failed due to unsafe AI patterns.")
-        sys.exit(1)
+        if mode == "enforce":
+            print("\n❌ ENFORCE MODE: Build failed due to unsafe AI patterns.")
+            sys.exit(1)
+        else:
+            print("\n⚠️ WARN MODE: Build will continue, but AI risks were detected.")
+            sys.exit(0)
 
     print("✅ No AI guardrail violations found.")
     sys.exit(0)
