@@ -5,9 +5,9 @@ import json
 import urllib.request
 
 SCAN_PATTERNS = {
-    "HARDCODED_PROMPT": re.compile(r'prompt\\s*=\\s*["\\\'].*["\\\']', re.IGNORECASE),
-    "OPENAI_NO_GUARD": re.compile(r'openai\\.ChatCompletion\\.create', re.IGNORECASE),
-    "LLM_DIRECT_EXEC": re.compile(r'(exec|eval)\\s*\\(', re.IGNORECASE),
+    "HARDCODED_PROMPT": re.compile(r'prompt\s*=\s*["\'].*["\']', re.IGNORECASE),
+    "OPENAI_NO_GUARD": re.compile(r'openai\.ChatCompletion\.create', re.IGNORECASE),
+    "LLM_DIRECT_EXEC": re.compile(r'(exec|eval)\s*\(', re.IGNORECASE),
 }
 
 def scan_file(path):
@@ -28,8 +28,7 @@ def write_sarif(risks):
         "runs": [{
             "tool": {
                 "driver": {
-                    "name": "AIFoundary Guardrail Scan",
-                    "rules": []
+                    "name": "AIFoundary Guardrail Scan"
                 }
             },
             "results": []
@@ -113,7 +112,6 @@ def main():
         for path, findings in risks:
             summary.append(f"- `{path}` → {', '.join(findings)}")
         summary.append("\nWhy this matters: AI execution errors are irreversible.")
-        summary.append("Consider adding guardrails or switching to enforce mode.")
 
         post_pr_comment(github_token, "\n".join(summary))
 
