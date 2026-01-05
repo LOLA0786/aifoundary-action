@@ -7,6 +7,22 @@ inputs:
     description: 'Path to scan for AI risks'
     required: true
     default: '.'
+  mode:
+    description: 'Scan mode: warn or enforce'
+    required: false
+    default: 'warn'
+  enable-galani:
+    description: 'Send findings to Galani control plane'
+    required: false
+    default: 'false'
+  galani-endpoint:
+    description: 'Galani ingestion endpoint'
+    required: false
+    default: ''
+  github-token:
+    description: 'GitHub token for PR comments'
+    required: false
+    default: ''
 
 runs:
   using: 'docker'
